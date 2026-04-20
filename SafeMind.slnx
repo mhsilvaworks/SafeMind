@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SafeMind.Application/SafeMind.Application.csproj" />
+  <Project Path="SafeMind.Domain/SafeMind.Domain.csproj" />
+  <Project Path="SafeMind.Infrastructure/SafeMind.Infrastructure.csproj" />
+  <Project Path="SafeMind.WebAPI/SafeMind.WebAPI.csproj" />
+</Solution>
