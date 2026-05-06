@@ -1,8 +1,8 @@
 # SafeMind - Rede Social para Neurodivergentes
 
 ## Sobre o Projeto
-O SafeMind é uma plataforma de fóruns projetada para oferecer segurança e acessibilidade sensorial. 
-Desenvolvido como projeto final para a disciplina de [Nome da Disciplina].
+O SafeMind é uma plataforma de fóruns projetada para oferecer segurança e acessibilidade. 
+Desenvolvido como projeto final para a disciplina de Desenvolvimento de Sistemas.
 
 ##  Tecnologias Utilizadas
 - **Backend:** .NET 8 (C#)
