@@ -10,9 +10,4 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SafeMind.Application\SafeMind.Application.csproj" />
-    <ProjectReference Include="..\SafeMind.Infrastructure\SafeMind.Infrastructure.csproj" />
-  </ItemGroup>
-
 </Project>
