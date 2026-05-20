@@ -2,7 +2,6 @@ using System;
 
 namespace SafeMind.Domain
 {
-    // Enums definidos no Diagrama de Classes   
     public enum TipoConta
     {
         Neurodivergente,
