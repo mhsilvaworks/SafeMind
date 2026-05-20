@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace SafeMind.Domain
 {
@@ -7,9 +8,15 @@ namespace SafeMind.Domain
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public Guid OwnerId { get; set; }
         public TipoForum ForumType { get; set; } 
         public int MinAge { get; set; }
         public bool RequiresVerifiedStatus { get; set; }
+
+        // Chave Estrangeira e Propriedade de Navegação
+        public Guid OwnerId { get; set; }
+        public virtual User Owner { get; set; } = null!;
+
+        // Um fórum tem muitos posts
+        public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
     }
 }

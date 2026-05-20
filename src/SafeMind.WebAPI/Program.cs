@@ -1,13 +1,24 @@
 using Microsoft.EntityFrameworkCore;
 using SafeMind.Infrastructure.Data;
+// 1. ADICIONADOS: Os namespaces da nossa Aplicação
+using SafeMind.Application.Interfaces;
+using SafeMind.Application.Services;
+
 public partial class Program
 {
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        
         // Registrando o AppDbContext com PostgreSQL
         builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        // 2. ADICIONADO: Ensinar o .NET a ler os nossos Controllers (como o AuthController)
+        builder.Services.AddControllers();
+
+        // 3. ADICIONADO: Injeção de Dependência do nosso serviço SOLID
+        builder.Services.AddScoped<IAuthService, AuthService>();
 
         builder.Services.AddOpenApi();
 
@@ -21,11 +32,15 @@ public partial class Program
 
         app.UseHttpsRedirection();
 
+        // 4. ADICIONADO: Ativar as rotas dos Controllers na internet
+        app.MapControllers();
+
         var summaries = new[]
         {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        };
 
+        // Rota de exemplo que já veio com o .NET (pode apagar isso no futuro quando não precisar mais)
         app.MapGet("/weatherforecast", () =>
         {
             var forecast = Enumerable.Range(1, 5).Select(index =>

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using SafeMind.Domain; 
+using SafeMind.Domain;
 
 namespace SafeMind.Infrastructure.Data
 {
@@ -9,76 +9,45 @@ namespace SafeMind.Infrastructure.Data
         {
         }
 
-        // Mapeamento das Entidades para Tabelas no Banco
-        public DbSet<User> Users { get; set; }
-        public DbSet<Forum> Forums { get; set; }
-        public DbSet<Post> Posts { get; set; }
-        public DbSet<ValidationDocument> Documents { get; set; }
+        public DbSet<User> Users { get; set; } = null!;
+        public DbSet<Forum> Forums { get; set; } = null!;
+        public DbSet<Post> Posts { get; set; } = null!;
+        public DbSet<ValidationDocument> ValidationDocuments { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // 1. Configuração da Entidade User
-            modelBuilder.Entity<User>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Nome).HasColumnType("varchar(100)").IsRequired();
-                entity.Property(e => e.Email).HasColumnType("varchar(150)").IsRequired();
-                entity.Property(e => e.PasswordHash).HasColumnType("varchar(255)").IsRequired();
-            });
+            modelBuilder.Entity<User>()
+                .HasDiscriminator<TipoConta>("AccountType")
+                .HasValue<UsuarioNeurodivergente>(TipoConta.Neurodivergente)
+                .HasValue<Profissional>(TipoConta.Profissional)
+                .HasValue<Empresa>(TipoConta.Empresa)
+                .HasValue<Administrador>(TipoConta.Administrador);
 
-            // 2. Configuração da Entidade Forum e Relacionamento (1 para Muitos com User)
-            modelBuilder.Entity<Forum>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Title).HasColumnType("varchar(100)").IsRequired();
-                entity.Property(e => e.Description).HasColumnType("varchar(500)");
-                
-                // Indexando FK para evitar deadlocks
-                entity.HasIndex(e => e.OwnerId); 
-                
-                // Relação FORUMS -> USERS
-                entity.HasOne<User>()
-                      .WithMany()
-                      .HasForeignKey(e => e.OwnerId);
-            });
+            modelBuilder.Entity<Forum>()
+                .HasOne(f => f.Owner)
+                .WithMany(u => u.Forums)
+                .HasForeignKey(f => f.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // 3. Configuração da Entidade Post e Relacionamentos
-            modelBuilder.Entity<Post>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Content).HasColumnType("varchar(2000)").IsRequired();
-                
-                // Indexando FKs
-                entity.HasIndex(e => e.UserId);
-                entity.HasIndex(e => e.ForumId);
+            modelBuilder.Entity<Post>()
+                .HasOne(p => p.User)
+                .WithMany(u => u.Posts)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-                // Relação POSTS -> USERS
-                entity.HasOne<User>()
-                      .WithMany()
-                      .HasForeignKey(e => e.UserId);
+            modelBuilder.Entity<Post>()
+                .HasOne(p => p.Forum)
+                .WithMany(f => f.Posts)
+                .HasForeignKey(p => p.ForumId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-                // Relação POSTS -> FORUMS
-                entity.HasOne<Forum>()
-                      .WithMany()
-                      .HasForeignKey(e => e.ForumId);
-            });
-
-            // 4. Configuração da Entidade ValidationDocument (Relação 1 para 0..1 com User)
-            modelBuilder.Entity<ValidationDocument>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.FileUrl).HasColumnType("varchar(500)").IsRequired();
-
-                // Indexando FK Exclusiva (Única)
-                entity.HasIndex(e => e.UserId).IsUnique(); 
-
-                // Relação DOCUMENTS -> USERS
-                entity.HasOne<User>()
-                      .WithOne()
-                      .HasForeignKey<ValidationDocument>(e => e.UserId);
-            });
+            modelBuilder.Entity<ValidationDocument>()
+                .HasOne(d => d.User)
+                .WithOne(u => u.ValidationDocument)
+                .HasForeignKey<ValidationDocument>(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
