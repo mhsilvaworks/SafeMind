@@ -4,7 +4,9 @@ namespace SafeMind.Application.Interfaces
 {
     public interface IAuthService
     {
-        // O contrato diz: "Quem usar este serviço tem de conseguir registar um utilizador"
         string Register(RegisterUserDto dto);
+        
+        // A nossa nova linha para o KAN-4!
+        string Login(LoginUserDto dto); 
     }
 }

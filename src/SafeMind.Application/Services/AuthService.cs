@@ -1,23 +1,25 @@
 using SafeMind.Application.DTOs;
 using SafeMind.Application.Interfaces;
 using SafeMind.Domain;
-using SafeMind.Infrastructure.Data; // ADICIONADO: Para ele conhecer o banco de dados
+using SafeMind.Infrastructure.Data;
 using System;
+using System.Linq; // Muito importante para a procura na base de dados!
 using BCrypt.Net; 
 
 namespace SafeMind.Application.Services
 {
     public class AuthService : IAuthService
     {
-        // 1. ADICIONADO: A variável que vai segurar a conexão com o banco
         private readonly AppDbContext _context;
 
-        // 2. ADICIONADO: O Construtor que recebe o banco (Injeção de Dependência)
         public AuthService(AppDbContext context)
         {
             _context = context;
         }
 
+        // ==========================================================
+        // 1. MÉTODO DE REGISTO (O que já estava a funcionar 100%)
+        // ==========================================================
         public string Register(RegisterUserDto dto)
         {
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
@@ -90,14 +92,36 @@ namespace SafeMind.Application.Services
             newUser.BirthDate = dto.BirthDate;
             newUser.AccountType = dto.AccountType;
 
-            // 3. ADICIONADO: O Grande Final!
-            // Avisamos o Entity Framework que temos um dado novo...
             _context.Users.Add(newUser);
-            
-            // ...e mandamos salvar fisicamente no Docker!
             _context.SaveChanges();
 
             return $"Sucesso! O utilizador {newUser.Nome} do tipo {newUser.AccountType} foi criado!";
+        }
+
+        // ==========================================================
+        // 2. O NOVO MÉTODO DE LOGIN (Para a task KAN-4)
+        // ==========================================================
+        public string Login(LoginUserDto dto)
+        {
+            // 1. Procura o utilizador pelo Email na base de dados
+            var user = _context.Users.FirstOrDefault(u => u.Email == dto.Email);
+
+            if (user == null)
+            {
+                // Por segurança, nunca dizemos se o que falhou foi o email ou a senha
+                throw new Exception("Utilizador ou palavra-passe incorretos.");
+            }
+
+            // 2. A Mágica do BCrypt: Ele verifica se a senha digitada bate com o Hash guardado
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+
+            if (!isPasswordValid)
+            {
+                throw new Exception("Utilizador ou palavra-passe incorretos.");
+            }
+
+            // 3. Retorno temporário até criarmos o Token JWT
+            return "Login efetuado com sucesso! Preparado para receber o JWT.";
         }
     }
 }
