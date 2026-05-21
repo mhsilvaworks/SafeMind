@@ -3,22 +3,31 @@ using SafeMind.Application.Interfaces;
 using SafeMind.Domain;
 using SafeMind.Infrastructure.Data;
 using System;
-using System.Linq; // Muito importante para a procura na base de dados!
-using BCrypt.Net; 
+using System.Linq;
+using BCrypt.Net;
+// === NOVOS USINGS PARA O JWT ===
+using Microsoft.Extensions.Configuration;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace SafeMind.Application.Services
 {
     public class AuthService : IAuthService
     {
         private readonly AppDbContext _context;
+        private readonly IConfiguration _config; // A nossa ponte para o appsettings.json
 
-        public AuthService(AppDbContext context)
+        // Agora o serviço recebe a Base de Dados E as Configurações
+        public AuthService(AppDbContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
 
         // ==========================================================
-        // 1. MÉTODO DE REGISTO (O que já estava a funcionar 100%)
+        // 1. MÉTODO DE REGISTO (Intacto)
         // ==========================================================
         public string Register(RegisterUserDto dto)
         {
@@ -99,20 +108,17 @@ namespace SafeMind.Application.Services
         }
 
         // ==========================================================
-        // 2. O NOVO MÉTODO DE LOGIN (Para a task KAN-4)
+        // 2. O MÉTODO DE LOGIN DEFINITIVO (KAN-4 CONCLUÍDA)
         // ==========================================================
         public string Login(LoginUserDto dto)
         {
-            // 1. Procura o utilizador pelo Email na base de dados
             var user = _context.Users.FirstOrDefault(u => u.Email == dto.Email);
 
             if (user == null)
             {
-                // Por segurança, nunca dizemos se o que falhou foi o email ou a senha
                 throw new Exception("Utilizador ou palavra-passe incorretos.");
             }
 
-            // 2. A Mágica do BCrypt: Ele verifica se a senha digitada bate com o Hash guardado
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
 
             if (!isPasswordValid)
@@ -120,8 +126,38 @@ namespace SafeMind.Application.Services
                 throw new Exception("Utilizador ou palavra-passe incorretos.");
             }
 
-            // 3. Retorno temporário até criarmos o Token JWT
-            return "Login efetuado com sucesso! Preparado para receber o JWT.";
+            // === A MÁGICA DA CRIAÇÃO DO TOKEN JWT ===
+
+            // 1. Vai buscar a chave secreta ao cofre
+            var jwtKey = _config["Jwt:Key"]!;
+            var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
+            var securityKey = new SymmetricSecurityKey(keyBytes);
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            // 2. Criar as Claims (O que o crachá diz sobre o utilizador)
+            // Aqui estamos a injetar o Id e o Tipo de Conta como pede o KAN-4!
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("TipoConta", user.AccountType.ToString())
+            };
+
+            // 3. Montar a estrutura do Token (Validade de 2 horas)
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddHours(2),
+                Issuer = _config["Jwt:Issuer"],
+                Audience = _config["Jwt:Audience"],
+                SigningCredentials = credentials
+            };
+
+            // 4. Fabricar e devolver a string final
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
         }
     }
 }
