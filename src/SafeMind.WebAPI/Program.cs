@@ -18,6 +18,9 @@ builder.Services.AddControllers();
 
 // 2. Injeção de dependência
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IForumService, ForumService>();
+builder.Services.AddScoped<IPostService, PostService>();
+
 
 // 3. OpenAPI nativo do .NET 10 
 builder.Services.AddOpenApi();
