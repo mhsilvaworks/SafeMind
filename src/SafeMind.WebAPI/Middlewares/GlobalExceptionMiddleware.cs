@@ -18,14 +18,14 @@ namespace SafeMind.WebAPI.Middlewares
         {
             try
             {
-                // Deixa a requisição seguir o seu fluxo normal pela API
+
                 await _next(context);
             }
             catch (Exception ex)
             {
-                // Se ALGO der errado em qualquer lugar do sistema, o erro cai aqui!
+                
                 context.Response.ContentType = "application/json";
-                context.Response.StatusCode = 500; // 500 = Internal Server Error
+                context.Response.StatusCode = 500; 
 
                 var response = new 
                 { 

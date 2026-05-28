@@ -8,7 +8,6 @@ namespace SafeMind.Domain
         public string Content { get; set; } = string.Empty;
         public bool HasTriggerWarning { get; set; }
 
-        // Chaves Estrangeiras e Navegação
         public Guid UserId { get; set; }
         public virtual User User { get; set; } = null!;
 

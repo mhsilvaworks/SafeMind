@@ -26,9 +26,6 @@ namespace SafeMind.Application.Services
             _config = config;
         }
 
-        // ==========================================================
-        // 1. MÉTODO DE REGISTO (Intacto)
-        // ==========================================================
         public string Register(RegisterUserDto dto)
         {
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
@@ -107,9 +104,6 @@ namespace SafeMind.Application.Services
             return $"Sucesso! O utilizador {newUser.Nome} do tipo {newUser.AccountType} foi criado!";
         }
 
-        // ==========================================================
-        // 2. O MÉTODO DE LOGIN DEFINITIVO (KAN-4 CONCLUÍDA)
-        // ==========================================================
         public string Login(LoginUserDto dto)
         {
             var user = _context.Users.FirstOrDefault(u => u.Email == dto.Email);
@@ -126,16 +120,11 @@ namespace SafeMind.Application.Services
                 throw new Exception("Utilizador ou palavra-passe incorretos.");
             }
 
-            // === A MÁGICA DA CRIAÇÃO DO TOKEN JWT ===
-
-            // 1. Vai buscar a chave secreta ao cofre
             var jwtKey = _config["Jwt:Key"]!;
             var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
             var securityKey = new SymmetricSecurityKey(keyBytes);
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            // 2. Criar as Claims (O que o crachá diz sobre o utilizador)
-            // Aqui estamos a injetar o Id e o Tipo de Conta como pede o KAN-4!
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
@@ -143,7 +132,6 @@ namespace SafeMind.Application.Services
                 new Claim("TipoConta", user.AccountType.ToString())
             };
 
-            // 3. Montar a estrutura do Token (Validade de 2 horas)
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
@@ -153,7 +141,6 @@ namespace SafeMind.Application.Services
                 SigningCredentials = credentials
             };
 
-            // 4. Fabricar e devolver a string final
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
