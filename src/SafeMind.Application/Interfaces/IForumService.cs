@@ -8,4 +8,5 @@ public interface IForumService
     Task<IEnumerable<Forum>> GetAllAsync();
     Task UpdateAsync(Guid forumId, UpdateForumDto dto, Guid requesterId);
     Task DeleteAsync(Guid forumId, Guid requesterId);
+    Task ValidarAcessoAoForumAsync(Guid userId, Guid forumId);
 }

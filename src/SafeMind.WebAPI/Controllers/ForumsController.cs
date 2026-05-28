@@ -29,6 +29,9 @@ public class ForumsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
+        // 1. A BARREIRA DA KAN-9 (O Segurança atua na porta de entrada!)
+        await _forumService.ValidarAcessoAoForumAsync(GetRequesterId(), id);
+        
         var forum = await _forumService.GetByIdAsync(id);
         return forum is null ? NotFound() : Ok(forum);
     }
@@ -36,6 +39,10 @@ public class ForumsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateForumDto dto)
     {
+        // 1. A BARREIRA DA KAN-9 (O Segurança atua na edição também!)
+        await _forumService.ValidarAcessoAoForumAsync(GetRequesterId(), id);
+        
+        // 2. Se passar pela barreira sem explodir, atualiza o fórum
         await _forumService.UpdateAsync(id, dto, GetRequesterId());
         return NoContent();
     }

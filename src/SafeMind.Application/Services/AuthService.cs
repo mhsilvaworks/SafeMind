@@ -98,7 +98,7 @@ namespace SafeMind.Application.Services
             newUser.Nome = dto.Nome;
             newUser.Email = dto.Email;
             newUser.PasswordHash = passwordHash;
-            newUser.BirthDate = dto.BirthDate;
+            newUser.BirthDate = dto.BirthDate.ToUniversalTime();
             newUser.AccountType = dto.AccountType;
 
             _context.Users.Add(newUser);
