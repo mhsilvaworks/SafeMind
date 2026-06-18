@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SafeMind.Tests/SafeMind.Tests.csproj" />
+  </Folder>
   <Project Path="src/SafeMind.Application/SafeMind.Application.csproj" />
   <Project Path="src/SafeMind.Domain/SafeMind.Domain.csproj" />
   <Project Path="src/SafeMind.Infrastructure/SafeMind.Infrastructure.csproj" />
