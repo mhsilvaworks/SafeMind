@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Safe Mind — Entrar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --sage-deep: #4a7c59;
+      --sage-mid: #6b9f7a;
+      --sage-light: #a8d5b8;
+      --sage-wash: #dceee3;
+      --sage-bg: #f0f7f2;
+      --cream: #fafcfa;
+      --text-primary: #2c3e2f;
+      --text-secondary: #5a6e5d;
+      --text-muted: #8a9b8d;
+      --error-soft: #d4564e;
+      --error-bg: #fdf0ef;
+      --success-soft: #3a8a5c;
+      --success-bg: #edf7f1;
+      --radius: 14px;
+      --shadow-rest: 0 2px 20px rgba(74, 124, 89, 0.08);
+      --shadow-hover: 0 4px 32px rgba(74, 124, 89, 0.14);
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { height: 100%; }
+
+    body {
+      height: 100%;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--sage-bg);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ambient background shapes */
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    body::before {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--sage-light), transparent 70%);
+      top: -120px;
+      right: -100px;
+    }
+    body::after {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--sage-wash), transparent 70%);
+      bottom: -80px;
+      left: -60px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--cream);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-rest);
+      padding: 48px 36px 40px;
+      position: relative;
+      z-index: 1;
+      transition: box-shadow var(--transition);
+    }
+    .login-card:hover {
+      box-shadow: var(--shadow-hover);
+    }
+
+    /* Brand */
+    .brand {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .brand-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      background: var(--sage-wash);
+      border-radius: 14px;
+      margin-bottom: 16px;
+    }
+    .brand-icon svg {
+      width: 28px;
+      height: 28px;
+      color: var(--sage-deep);
+    }
+    .brand h1 {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 1.75rem;
+      color: var(--sage-deep);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+    .brand p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-weight: 400;
+    }
+
+    /* Form fields */
+    .field {
+      margin-bottom: 20px;
+    }
+    .field label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 7px;
+      letter-spacing: 0.01em;
+    }
+    .field input {
+      width: 100%;
+      padding: 13px 16px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+      background: var(--sage-bg);
+      border: 2px solid transparent;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+    }
+    .field input::placeholder {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+    .field input:focus {
+      border-color: var(--sage-mid);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(107, 159, 122, 0.12);
+    }
+
+    /* Buttons */
+    .btn-submit, .btn-logout {
+      width: 100%;
+      padding: 14px;
+      margin-top: 8px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background var(--transition), transform 0.15s ease, box-shadow var(--transition);
+      position: relative;
+    }
+    .btn-submit {
+      background: var(--sage-deep);
+    }
+    .btn-logout {
+      background: var(--error-soft);
+      margin-top: 24px;
+    }
+    .btn-submit:hover:not(:disabled) {
+      background: #3e6a4b;
+      box-shadow: 0 4px 16px rgba(74, 124, 89, 0.25);
+    }
+    .btn-logout:hover {
+      background: #b54a43;
+    }
+    .btn-submit:active:not(:disabled), .btn-logout:active {
+      transform: scale(0.985);
+    }
+
+    /* Loading spinner inside button */
+    .btn-submit .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    .btn-submit.loading .spinner {
+      display: inline-block;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Feedback message */
+    .feedback {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      line-height: 1.5;
+      display: none;
+      text-align: center;
+    }
+    .feedback.error {
+      display: block;
+      background: var(--error-bg);
+      color: var(--error-soft);
+    }
+    .feedback.success {
+      display: block;
+      background: var(--success-bg);
+      color: var(--success-soft);
+    }
+
+    /* Register Link */
+    .register-link {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    .register-link a {
+      color: var(--sage-deep);
+      font-weight: 600;
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    .register-link a:hover {
+      color: var(--sage-mid);
+      text-decoration: underline;
+    }
+
+    /* Dashboard View (Escondida por padrão) */
+    .dashboard-view {
+      display: none;
+      text-align: center;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    .dashboard-view h2 {
+      font-family: 'Nunito', sans-serif;
+      color: var(--sage-deep);
+      margin-bottom: 12px;
+    }
+    .dashboard-view p {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 36px 24px 32px;
+      }
+      .brand h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5c-1.956 0-3.29 1.088-4.044 1.97A7.96 7.96 0 0 0 6 12c0 3.31 2.69 6 6 6s6-2.69 6-6a7.96 7.96 0 0 0-1.956-5.03C15.29 6.088 13.956 5 12 5Z"/>
+          <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Z"/>
+          <circle cx="9.5" cy="11" r="1"/>
+          <circle cx="14.5" cy="11" r="1"/>
+          <path d="M9.5 15a3.5 3.5 0 0 0 5 0"/>
+        </svg>
+      </div>
+      <h1>Safe Mind</h1>
+      <p>Seu espaço seguro começa aqui</p>
+    </div>
+
+    <div id="loginView">
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" placeholder="seu@email.com" autocomplete="email" required />
+        </div>
+
+        <div class="field">
+          <label for="password">Senha</label>
+          <input type="password" id="password" name="password" placeholder="Sua senha" autocomplete="current-password" required />
+        </div>
+
+        <button type="submit" class="btn-submit" id="btnSubmit">
+          <span class="spinner"></span>
+          <span class="btn-text">Entrar</span>
+        </button>
+
+        <div class="feedback" id="feedback"></div>
+      </form>
+
+      <p class="register-link">
+        <a href="register.html">Criar Conta</a>
+      </p>
+    </div>
+
+    <div id="dashboardView" class="dashboard-view">
+      <h2>Bem-vindo(a)!</h2>
+      <p>Você entrou com sucesso no Safe Mind. Seu Token de acesso foi salvo com segurança no navegador.</p>
+      
+      <button class="btn-logout" id="btnLogout">Sair da Conta</button>
+    </div>
+
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const btn = document.getElementById('btnSubmit');
+    const btnText = btn.querySelector('.btn-text');
+    const feedback = document.getElementById('feedback');
+    const loginView = document.getElementById('loginView');
+    const dashboardView = document.getElementById('dashboardView');
+    const btnLogout = document.getElementById('btnLogout');
+    
+    // Substitua esta URL caso mude a porta do seu C#
+    const API_URL = 'http://localhost:5029/api/Auth/login';
+
+    function showFeedback(message, type) {
+      feedback.className = 'feedback ' + type;
+      feedback.textContent = message;
+    }
+
+    function clearFeedback() {
+      feedback.className = 'feedback';
+      feedback.textContent = '';
+    }
+
+    function setLoading(loading) {
+      btn.disabled = loading;
+      btn.classList.toggle('loading', loading);
+      btnText.textContent = loading ? 'Entrando...' : 'Entrar';
+    }
+
+    // Função que esconde o formulário e mostra a tela de sucesso
+    function toggleDashboard(isLoggedIn) {
+      if (isLoggedIn) {
+        loginView.style.display = 'none';
+        dashboardView.style.display = 'block';
+      } else {
+        loginView.style.display = 'block';
+        dashboardView.style.display = 'none';
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+        clearFeedback();
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearFeedback();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        showFeedback('Preencha todos os campos para continuar.', 'error');
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.text();
+
+        if (response.ok) {
+          // Salva o crachá do backend
+          localStorage.setItem('jwt_token', data);
+          // Muda a tela visualmente
+          toggleDashboard(true);
+        } else {
+          // Pega a mensagem de erro que você configurou no C# ("Utilizador ou palavra-passe incorretos")
+          const message = data || 'E-mail ou senha incorretos.';
+          showFeedback(message, 'error');
+        }
+      } catch (err) {
+        showFeedback('Servidor offline. Verifique se a API do SafeMind está rodando (dotnet run).', 'error');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // Botão de Logout para limpar tudo e testar de novo
+    btnLogout.addEventListener('click', () => {
+      localStorage.removeItem('jwt_token');
+      toggleDashboard(false);
+    });
+  </script>
+
+</body>
+</html>

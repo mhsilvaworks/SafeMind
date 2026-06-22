@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Scalar.AspNetCore;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Banco de dados
@@ -16,12 +15,22 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddControllers();
 
+// ==========================================
+// LIBERAÇÃO DO CORS PARA O FRONT-END (HTML)
+// ==========================================
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy => policy.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
+
 // 2. Injeção de dependência
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IForumService, ForumService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IUserService, UserService>();
-
 
 // 3. OpenAPI nativo do .NET 10 
 builder.Services.AddOpenApi();
@@ -61,6 +70,10 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<SafeMind.WebAPI.Middlewares.GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
+
+
+app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
