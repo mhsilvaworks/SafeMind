@@ -38,5 +38,5 @@ O projeto foi rigorosamente modularizado para garantir escalabilidade e separaç
 
 **1. Clone o repositório:**
 ```bash
-git clone [https://github.com/SEU_USUARIO/SafeMind.git](https://github.com/SEU_USUARIO/SafeMind.git)
+git clone [https://github.com/mhsilvaworks/SafeMind.git](https://github.com/SEU_USUARIO/SafeMind.git)
 cd SafeMind
