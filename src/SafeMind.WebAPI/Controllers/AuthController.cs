@@ -17,7 +17,7 @@ namespace SafeMind.WebAPI.Controllers
         }
 
         // ==========================================
-        // 1. ROTA DE REGISTO (A que já tínhamos)
+        // 1. ROTA DE REGISTO 
         // ==========================================
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterUserDto dto)
@@ -49,7 +49,7 @@ namespace SafeMind.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                // Se a palavra-passe estiver errada, devolve 401 Unauthorized (padrão ouro de segurança)
+                // Se a palavra-passe estiver errada, devolve 401 Unauthorized 
                 return Unauthorized(new { erro = ex.Message });
             }
         }
